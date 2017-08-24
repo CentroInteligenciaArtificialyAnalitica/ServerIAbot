@@ -1,5 +1,4 @@
 # Clase de conexion con el servidor
 /node_modules/*
 /node_modules
-
-
+.env
