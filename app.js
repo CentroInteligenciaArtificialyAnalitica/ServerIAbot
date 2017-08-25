@@ -1,6 +1,12 @@
-const express = require ('express')
-const bodyParser = require('body-parser')
-const request = require('request')
+//
+// This is main file containing code implementing the Express server and functionality for the Express echo bot.
+//
+'use strict';
+const express = require ('express');
+const bodyParser = require('body-parser');
+const request = require('request');
+const path = require('path');
+require('dotenv').config();
 var messengerButton = "<html><head><title>Facebook Messenger Bot</title></head><body><h1>Facebook Messenger Bot</h1>This is a bot based on Messenger Platform QuickStart. For more details, see their <a href=\"https://developers.facebook.com/docs/messenger-platform/guides/quick-start\">docs</a>.<script src=\"https://button.glitch.me/button.js\" data-style=\"glitch\"></script><div class=\"glitchButton\" style=\"position:fixed;top:20px;right:20px;\"></div></body></html>";
 
 // The rest of the code implements the routes for our Express server.
@@ -36,6 +42,8 @@ app.get('/', function(req, res) {
 // Set Express to listen out for HTTP requests
 var server = app.listen(3000, function () {
   console.log("Listening on port %s", server.address().port);
+  console.log("The VERIFY_TOKEN is: %s", process.env.VERIFY_TOKEN);
+  console.log("The PAGE_ACCESS_TOKEN is: %s", process.env.PAGE_ACCESS_TOKEN);
 });
 
 
