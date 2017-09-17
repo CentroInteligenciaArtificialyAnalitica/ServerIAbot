@@ -12,9 +12,11 @@ var messengerButton = "<html><head><title>Facebook Messenger Bot</title></head><
 // The rest of the code implements the routes for our Express server.
 let app = express();
 
+//modulos terminos y condiciones
 var conditions = require('./conditions'),
 terms = require('./terms');
 
+// motor de plantillas pug
 var pug = require('pug');
 app.set('views', '.');
 app.set('view engine', 'pug');
@@ -46,7 +48,7 @@ app.get('/', function(req, res) {
   res.end();
 });
 
-
+// Rutas Terminos y condiciones
 app.get('/conditions',conditions.controller);
 app.get('/terms',terms.controller);
 
@@ -59,6 +61,14 @@ var server = app.listen(3000, function () {
   console.log("The VERIFY_TOKEN is: %s", process.env.VERIFY_TOKEN);
   console.log("The PAGE_ACCESS_TOKEN is: %s", process.env.PAGE_ACCESS_TOKEN);
 });
+
+
+// getStarted button
+app.get('/setup',function(req,res){
+
+    setupGetStartedButton(res);
+});
+
 
 
 // Display the web page
@@ -236,3 +246,32 @@ function callSendAPI(messageData) {
     }
   });
 }
+
+
+function setupGetStartedButton(res){
+        var messageData = {
+                "get_started":
+                {
+                    "payload":"Empezar"
+                    }
+
+        };
+
+        // Start the request
+        request({
+            url: 'https://graph.facebook.com/v2.6/me/messenger_profile?access_token='+ process.env.PAGE_ACCESS_TOKEN,
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            form: messageData
+        },
+        function (error, response, body) {
+            if (!error && response.statusCode == 200) {
+                // Print out the response body
+                res.send(body);
+
+            } else {
+                // TODO: Handle errors
+                res.send(body);
+            }
+        });
+    }
