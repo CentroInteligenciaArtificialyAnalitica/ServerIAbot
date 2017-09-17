@@ -12,6 +12,14 @@ var messengerButton = "<html><head><title>Facebook Messenger Bot</title></head><
 // The rest of the code implements the routes for our Express server.
 let app = express();
 
+var conditions = require('./conditions'),
+terms = require('./terms');
+
+var pug = require('pug');
+app.set('views', '.');
+app.set('view engine', 'pug');
+
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
   extended: true
@@ -27,7 +35,7 @@ app.get('/webhook', function(req, res) {
     res.status(200).send(req.query['hub.challenge']);
   } else {
     console.error("Failed validation. Make sure the validation tokens match.");
-    res.sendStatus(403);          
+    res.sendStatus(403);
   }
 });
 
@@ -37,6 +45,12 @@ app.get('/', function(req, res) {
   res.write(messengerButton);
   res.end();
 });
+
+
+app.get('/conditions',conditions.controller);
+app.get('/terms',terms.controller);
+
+
 
 
 // Set Express to listen out for HTTP requests
@@ -61,7 +75,7 @@ app.post('/webhook', function (req, res) {
 
   // Make sure this is a page subscription
   if (data.object === 'page') {
-    
+
     // Iterate over each entry - there may be multiple if batched
     data.entry.forEach(function(entry) {
       var pageID = entry.id;
@@ -72,7 +86,7 @@ app.post('/webhook', function (req, res) {
         if (event.message) {
           receivedMessage(event);
         } else if (event.postback) {
-          receivedPostback(event);   
+          receivedPostback(event);
         } else {
           console.log("Webhook received unknown event: ", event);
         }
@@ -95,7 +109,7 @@ function receivedMessage(event) {
   var timeOfMessage = event.timestamp;
   var message = event.message;
 
-  console.log("Received message for user %d and page %d at %d with message:", 
+  console.log("Received message for user %d and page %d at %d with message:",
     senderID, recipientID, timeOfMessage);
   console.log(JSON.stringify(message));
 
@@ -125,14 +139,14 @@ function receivedPostback(event) {
   var recipientID = event.recipient.id;
   var timeOfPostback = event.timestamp;
 
-  // The 'payload' param is a developer-defined field which is set in a postback 
-  // button for Structured Messages. 
+  // The 'payload' param is a developer-defined field which is set in a postback
+  // button for Structured Messages.
   var payload = event.postback.payload;
 
-  console.log("Received postback for user %d and page %d with payload '%s' " + 
+  console.log("Received postback for user %d and page %d with payload '%s' " +
     "at %d", senderID, recipientID, payload, timeOfPostback);
 
-  // When a postback is called, we'll send a message back to the sender to 
+  // When a postback is called, we'll send a message back to the sender to
   // let them know it was successful
   sendTextMessage(senderID, "Postback called");
 }
@@ -166,7 +180,7 @@ function sendGenericMessage(recipientId) {
           elements: [{
             title: "rift",
             subtitle: "Next-generation virtual reality",
-            item_url: "https://www.oculus.com/en-us/rift/",               
+            item_url: "https://www.oculus.com/en-us/rift/",
             image_url: "http://messengerdemo.parseapp.com/img/rift.png",
             buttons: [{
               type: "web_url",
@@ -180,7 +194,7 @@ function sendGenericMessage(recipientId) {
           }, {
             title: "touch",
             subtitle: "Your Hands, Now in VR",
-            item_url: "https://www.oculus.com/en-us/touch/",               
+            item_url: "https://www.oculus.com/en-us/touch/",
             image_url: "http://messengerdemo.parseapp.com/img/touch.png",
             buttons: [{
               type: "web_url",
@@ -195,7 +209,7 @@ function sendGenericMessage(recipientId) {
         }
       }
     }
-  };  
+  };
 
   callSendAPI(messageData);
 }
@@ -213,16 +227,12 @@ function callSendAPI(messageData) {
       var recipientId = body.recipient_id;
       var messageId = body.message_id;
 
-      console.log("Successfully sent generic message with id %s to recipient %s", 
+      console.log("Successfully sent generic message with id %s to recipient %s",
         messageId, recipientId);
     } else {
       console.error("Unable to send message.");
       console.error(response);
       console.error(error);
     }
-  });  
+  });
 }
-
-
-
-
