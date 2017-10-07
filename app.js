@@ -64,9 +64,14 @@ var server = app.listen(3000, function () {
 
 
 // getStarted button
-app.get('/setup',function(req,res){
-
-    setupGetStartedButton(res);
+app.get('/setup-button',function(req,res){
+  var messageData = {
+          "get_started":
+          {
+              "payload":"Empezar"
+              }
+  };
+setup(res,messageData);
 });
 
 // persistent button
@@ -112,7 +117,7 @@ app.get('/persistent-menu',function(req, res){
     }
   ]
 };
-  callSendAPI(menu);
+  setup(res,menu);
 });
 
 // Display the web page
@@ -292,21 +297,14 @@ function callSendAPI(messageData) {
 }
 
 
-function setupGetStartedButton(res){
-        var messageData = {
-                "get_started":
-                {
-                    "payload":"Empezar"
-                    }
-
-        };
+function setup(res,data){
 
         // Start the request
         request({
             url: 'https://graph.facebook.com/v2.6/me/messenger_profile?access_token='+ process.env.PAGE_ACCESS_TOKEN,
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
-            form: messageData
+            form: data
         },
         function (error, response, body) {
             if (!error && response.statusCode == 200) {
